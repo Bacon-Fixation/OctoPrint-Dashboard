@@ -21,7 +21,7 @@ class DashboardPlugin(octoprint.plugin.SettingsPlugin,
     extruded_filament_arr = []
     extruder_mode = ""
     cpu_percent = 0
-    cpu_temp = 0
+    get_get_cpu_temp = 0
     cpu_freq = 0
     virtual_memory_percent = 0
     disk_usage = 0
@@ -34,18 +34,18 @@ class DashboardPlugin(octoprint.plugin.SettingsPlugin,
         temp_sum = 0
         thermal = psutil.sensors_temperatures(fahrenheit=False)
         if "cpu-thermal" in thermal: #RPi
-            self.cpu_temp = int(round((thermal["cpu-thermal"][0][1])))
+            self.get_get_cpu_temp = int(round((thermal["cpu-thermal"][0][1])))
         elif 'soc_thermal' in thermal: #BananaPi
-            self.cpu_temp=int(round(float(thermal['soc_thermal'][0][1])*1000))
+            self.get_get_cpu_temp=int(round(float(thermal['soc_thermal'][0][1])*1000))
         elif 'coretemp' in thermal: #Intel
             for temp in range(0,len(thermal["coretemp"]),1):
                 temp_sum = temp_sum+thermal["coretemp"][temp][1]
-            self.cpu_temp = int(round(temp_sum / len(thermal["coretemp"])))
+            self.get_get_cpu_temp = int(round(temp_sum / len(thermal["coretemp"])))
         elif 'w1_slave_temp' in thermal: #Dallas temp sensor fix
             tempFile = open("/sys/class/thermal/thermal_zone0/temp")
             cpu_val = tempFile.read()
             tempFile.close()
-            self.cpu_temp = int(round(float(cpu_val)/1000))
+            self.get_get_cpu_temp = int(round(float(cpu_val)/1000))
         self.cpu_percent = str(psutil.cpu_percent(interval=None, percpu=False))
         self.cpu_freq = str(int(round(psutil.cpu_freq(percpu=False).current, 0)))
         self.virtual_memory_percent = str(psutil.virtual_memory().percent)
@@ -78,7 +78,7 @@ class DashboardPlugin(octoprint.plugin.SettingsPlugin,
         self._plugin_manager.send_plugin_message(self._identifier, dict(cpuPercent=str(self.cpu_percent),
                                                                         virtualMemPercent=str(self.virtual_memory_percent),
                                                                         diskUsagePercent=str(self.disk_usage),
-                                                                        cpuTemp=str(self.cpu_temp),
+                                                                        cpuTemp=str(self.get_get_cpu_temp),
                                                                         cpuFreq=str(self.cpu_freq),
                                                                         extrudedFilament=str( round( (sum(self.extruded_filament_arr) + self.extruded_filament) / 1000, 2) ),
                                                                         layerTimes=str(self.layer_times),
